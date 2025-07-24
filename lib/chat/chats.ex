@@ -89,6 +89,24 @@ defmodule Chat.Chats do
     Repo.delete(room)
   end
 
+  def ensure_lobby_exists() do
+    case(Repo.get_by(Room, topic: "room:lobby")) do
+      nil ->
+        IO.puts("Lobby did not exist. Creating.")
+
+        %Room{}
+        |> Room.changeset(%{
+          name: "Lobby",
+          topic: "room:lobby"
+        })
+        |> Repo.insert()
+
+      room ->
+        IO.puts("Lobby exists in database.")
+        {:ok, room}
+    end
+  end
+
   @doc """
   Returns an `%Ecto.Changeset{}` for tracking room changes.
 
