@@ -58,6 +58,19 @@ defmodule ChatWeb do
     end
   end
 
+  def view do
+    quote do
+      use Phoenix.View,
+        root: "lib/chat_web/templates",
+        namespace: ChatWeb
+
+      # Импортируем хелперы
+      import ChatWeb.ErrorHelpers
+      import ChatWeb.Gettext
+      alias ChatWeb.Router.Helpers, as: Routes
+    end
+  end
+
   @doc """
   When used, dispatch to the appropriate controller/live_view/etc.
   """
