@@ -1,25 +1,39 @@
 defmodule ChatWeb.Router do
+  alias ChatWeb.APIAuthController
   use ChatWeb, :router
 
+  pipeline :api_auth do
+    plug ChatWeb.Plugs.Auth
+  end
+
   pipeline :api do
+    plug CORSPlug,
+      origin: ["http://localhost:3000"]
+
     plug :accepts, ["json"]
   end
 
   scope "/api", ChatWeb do
     pipe_through :api
 
+    options "/login", APIAuthController, :options
+    options "/signup", APIAuthController, :options
+    options "/logout", APIAuthController, :options
+
     resources "/users", UserController, only: [:index, :show]
     resources "/rooms", RoomController, only: [:index, :show]
     resources "/messages", MessageController, only: [:create]
+
+    post "/signup", APIAuthController, :signup
+    post "/login", APIAuthController, :login
+    delete "/logout", APIAuthController, :logout
+    get "/me", APIAuthController, :me
   end
 
-  # Enable LiveDashboard and Swoosh mailbox preview in development
+  pipeline :protected do
+  end
+
   if Application.compile_env(:chat, :dev_routes) do
-    # If you want to use the LiveDashboard in production, you should put
-    # it behind authentication and allow only admins to access it.
-    # If your application does not have an admins-only section yet,
-    # you can use Plug.BasicAuth to set up some basic authentication
-    # as long as you are also using SSL (which you should anyway).
     import Phoenix.LiveDashboard.Router
 
     scope "/dev" do

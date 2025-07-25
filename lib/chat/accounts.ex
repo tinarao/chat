@@ -2,10 +2,9 @@ defmodule Chat.Accounts do
   @moduledoc """
   The Accounts context.
   """
-
   import Ecto.Query, warn: false
+  import Ecto.Changeset
   alias Chat.Repo
-
   alias Chat.Accounts.User
 
   @doc """
@@ -38,6 +37,24 @@ defmodule Chat.Accounts do
   def get_user!(id), do: Repo.get!(User, id)
 
   @doc """
+  Gets a signle user. Do not raise. 
+  """
+  def get_user(id), do: Repo.get(User, id)
+
+  def get_by_email(email) do
+    Repo.get_by(Chat.Accounts.User, email: email)
+  end
+
+  def is_unique(email, username) do
+    from(u in Chat.Accounts.User,
+      where: u.email == ^email,
+      or_where: u.username == ^username,
+      select: count(u.id) > 0
+    )
+    |> Repo.exists?()
+  end
+
+  @doc """
   Creates a user.
 
   ## Examples
@@ -49,10 +66,20 @@ defmodule Chat.Accounts do
       {:error, %Ecto.Changeset{}}
 
   """
+  @spec create_user(map()) :: {:ok, Chat.Accounts.User.t()} | {:error, Ecto.Changeset.t()}
   def create_user(attrs \\ %{}) do
-    %User{}
-    |> User.changeset(attrs)
-    |> Repo.insert()
+    user_data =
+      %Chat.Accounts.User{}
+      |> User.register_changeset(attrs)
+
+    IO.inspect(user_data)
+
+    # Ecto.Changeset.cast()
+
+    case Repo.insert(user_data) do
+      {:ok, user} -> {:ok, user}
+      {:error, reason} -> {:error, reason}
+    end
   end
 
   @doc """
@@ -100,5 +127,9 @@ defmodule Chat.Accounts do
   """
   def change_user(%User{} = user, attrs \\ %{}) do
     User.changeset(user, attrs)
+  end
+
+  def verify_password(%User{password_hash: hash}, password) when is_binary(password) do
+    Argon2.verify_pass(password, hash)
   end
 end

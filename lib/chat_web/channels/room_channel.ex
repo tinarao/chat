@@ -1,19 +1,29 @@
 defmodule ChatWeb.RoomChannel do
   use Phoenix.Channel
 
-  def join("room:lobby", _message, socket) do
+  def join("room:lobby", %{"token" => token}, socket) do
     Chat.Chats.ensure_lobby_exists()
     {:ok, socket}
   end
 
-  def join("room:" <> room_id, _message, socket) do
-    {:ok, socket}
+  def join("room:" <> topic, _message, socket) do
+    case Chat.Chats.get_by_topic(topic) do
+      nil ->
+        {:error,
+         %{
+           error: %{
+             title: "комната \"" <> topic <> "\" не найдена"
+           }
+         }}
+
+      _room ->
+        {:ok, socket}
+    end
   end
 
   def handle_in("new_message", %{"user" => user, "content" => content}, socket) do
     case socket.topic do
       "room:lobby" ->
-        # сообщения из лобби не сохраняются. зачем?
         handle_lobby_message(user, content, socket)
 
       _other ->

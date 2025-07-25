@@ -5,8 +5,8 @@ defmodule Chat.Messages.Message do
   schema "messages" do
     field :content, :string
 
-    belongs_to :user, YourApp.Accounts.User
-    belongs_to :room, YourApp.Chat.Room
+    belongs_to :user, Chat.Accounts.User
+    belongs_to :room, Chat.Chats.Room
   end
 
   @doc false

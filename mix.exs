@@ -34,6 +34,7 @@ defmodule Chat.MixProject do
     [
       {:phoenix, "~> 1.7.21"},
       {:phoenix_view, "~> 2.0"},
+      {:cors_plug, "~> 3.0"},
       {:phoenix_ecto, "~> 4.5"},
       {:ecto_sql, "~> 3.10"},
       {:postgrex, ">= 0.0.0"},
@@ -45,7 +46,11 @@ defmodule Chat.MixProject do
       {:gettext, "~> 0.26"},
       {:jason, "~> 1.2"},
       {:dns_cluster, "~> 0.1.1"},
-      {:bandit, "~> 1.5"}
+      {:bandit, "~> 1.5"},
+      {:guardian, "~> 2.3"},
+      {:dotenv, "~> 3.1", only: [:dev, :test]},
+      {:joken, "~> 2.6"},
+      {:argon2_elixir, "~> 4.1.3"}
     ]
   end
 

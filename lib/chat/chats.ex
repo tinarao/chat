@@ -21,6 +21,10 @@ defmodule Chat.Chats do
     Repo.all(Room)
   end
 
+  def get_by_topic(topic) do
+    Repo.get_by(Room, topic: topic)
+  end
+
   @doc """
   Gets a single room.
 

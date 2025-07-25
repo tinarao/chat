@@ -7,6 +7,10 @@
 # General application configuration
 import Config
 
+config :joken,
+  default_signer: System.get_env("JWT_SECRET") || "default_dev_secret",
+  default_exp: 3600
+
 config :chat,
   ecto_repos: [Chat.Repo],
   generators: [timestamp_type: :utc_datetime]
