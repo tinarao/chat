@@ -13,21 +13,21 @@ defmodule ChatWeb.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/api", ChatWeb do
+  scope "/api" do
     pipe_through :api
 
     options "/login", APIAuthController, :options
     options "/signup", APIAuthController, :options
     options "/logout", APIAuthController, :options
+    options "/me", APIAuthController, :options
 
-    resources "/users", UserController, only: [:index, :show]
-    resources "/rooms", RoomController, only: [:index, :show]
-    resources "/messages", MessageController, only: [:create]
+    # resources "/users", UserController, only: [:index, :show]
+    # resources "/rooms", RoomController, only: [:index, :show]
+    # resources "/messages", MessageController, only: [:create]
 
     post "/signup", APIAuthController, :signup
     post "/login", APIAuthController, :login
     delete "/logout", APIAuthController, :logout
-    get "/me", APIAuthController, :me
   end
 
   pipeline :protected do

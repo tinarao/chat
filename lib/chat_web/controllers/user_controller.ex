@@ -1,7 +1,6 @@
 defmodule ChatWeb.UserController do
   use ChatWeb, :controller
   alias Chat.Accounts
-  alias Chat.Accounts.User
 
   def index(conn, _params) do
     users = Accounts.list_users()
