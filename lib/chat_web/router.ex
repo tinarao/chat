@@ -25,6 +25,8 @@ defmodule ChatWeb.Router do
 
     pipe_through :protected
     get "/me", APIAuthController, :me
+
+    post "rooms/create", ChatWeb.APIRoomsController, :create
   end
 
   pipeline :protected do

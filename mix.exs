@@ -50,7 +50,8 @@ defmodule Chat.MixProject do
       {:guardian, "~> 2.3"},
       {:dotenv, "~> 3.1", only: [:dev, :test]},
       {:joken, "~> 2.6"},
-      {:argon2_elixir, "~> 4.1.3"}
+      {:argon2_elixir, "~> 4.1.3"},
+      {:slugy, "~> 4.1.0"}
     ]
   end
 
