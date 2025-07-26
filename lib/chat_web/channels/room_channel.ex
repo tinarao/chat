@@ -17,7 +17,7 @@ defmodule ChatWeb.RoomChannel do
     {:ok, socket}
   end
 
-  def join("room:" <> topic, params, socket) do
+  def join(topic, params, socket) do
     case Chat.Chats.get_by_topic(topic) do
       nil ->
         {:error,
@@ -35,40 +35,40 @@ defmodule ChatWeb.RoomChannel do
   def handle_in("new_message", %{"user" => user, "content" => content}, socket) do
     case socket.topic do
       "room:lobby" ->
-        handle_lobby_message(user, content, socket)
+        handle_lobby_message(%{"user" => user, "content" => content}, socket)
 
       _other ->
-        handle_other_topic_message(user, content, socket)
+        handle_other_topic_message(%{"user" => user, "content" => content}, socket)
     end
   end
 
-  defp handle_lobby_message(user, content, socket) do
-    broadcast(socket, "new_message", %{
-      user: %{
-        username: user
-      },
-      content: content,
-      created_at: DateTime.utc_now()
-    })
-
-    # chat = Chat.Chats.Room.c
-
+  defp handle_lobby_message(%{"user" => user, "content" => content}, socket) do
+    broadcast_msg(socket, user, content)
     {:reply, :ok, socket}
   end
 
-  defp handle_other_topic_message(user, content, socket) do
-    # check room
-    # check user
-    # save msg
-    # etc
-    broadcast(socket, "new_message", %{
+  defp handle_other_topic_message(%{"user" => user, "content" => content}, socket) do
+    broadcast_msg(socket, user, content)
+    {:reply, :ok, socket}
+  end
+
+  defp broadcast_msg(socket, %{"username" => username, "id" =>  id}, content) do
+    IO.inspect(%{
       user: %{
-        username: user
+        username: username,
+        id: id
       },
       content: content,
       created_at: DateTime.utc_now()
     })
 
-    {:reply, :ok, socket}
+    broadcast(socket, "new_message", %{
+      user: %{
+        username: username,
+        id: id
+      },
+      content: content,
+      created_at: DateTime.utc_now()
+    })
   end
 end

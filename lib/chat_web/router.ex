@@ -23,10 +23,12 @@ defmodule ChatWeb.Router do
     post "/login", APIAuthController, :login
     delete "/logout", APIAuthController, :logout
 
+    get "/rooms/:topic", ChatWeb.APIRoomsController, :show
+
     pipe_through :protected
     get "/me", APIAuthController, :me
 
-    post "rooms/create", ChatWeb.APIRoomsController, :create
+    post "/rooms/create", ChatWeb.APIRoomsController, :create
   end
 
   pipeline :protected do
