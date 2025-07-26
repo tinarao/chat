@@ -1,12 +1,23 @@
 defmodule ChatWeb.RoomChannel do
   use Phoenix.Channel
+  alias Chat.Tokens
 
-  def join("room:lobby", %{"token" => token}, socket) do
+  defp find_user(params) do
+    with token when is_binary(token) <- params["token"],
+         {:ok, user} <- Tokens.extract_user(token) do
+      user
+    else
+      _ -> nil
+    end
+  end
+
+  def join("room:lobby", params, socket) do
     Chat.Chats.ensure_lobby_exists()
+
     {:ok, socket}
   end
 
-  def join("room:" <> topic, _message, socket) do
+  def join("room:" <> topic, params, socket) do
     case Chat.Chats.get_by_topic(topic) do
       nil ->
         {:error,

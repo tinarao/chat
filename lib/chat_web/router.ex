@@ -8,7 +8,8 @@ defmodule ChatWeb.Router do
 
   pipeline :api do
     plug CORSPlug,
-      origin: ["http://localhost:3000"]
+      origin: ["http://localhost:3000"],
+      credentials: true
 
     plug :accepts, ["json"]
   end
@@ -16,21 +17,18 @@ defmodule ChatWeb.Router do
   scope "/api" do
     pipe_through :api
 
-    options "/login", APIAuthController, :options
-    options "/signup", APIAuthController, :options
-    options "/logout", APIAuthController, :options
-    options "/me", APIAuthController, :options
-
-    # resources "/users", UserController, only: [:index, :show]
-    # resources "/rooms", RoomController, only: [:index, :show]
-    # resources "/messages", MessageController, only: [:create]
+    options "/*path", APIAuthController, :options
 
     post "/signup", APIAuthController, :signup
     post "/login", APIAuthController, :login
     delete "/logout", APIAuthController, :logout
+
+    pipe_through :protected
+    get "/me", APIAuthController, :me
   end
 
   pipeline :protected do
+    plug ChatWeb.Plugs.Protected
   end
 
   if Application.compile_env(:chat, :dev_routes) do

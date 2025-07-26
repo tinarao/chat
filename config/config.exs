@@ -8,8 +8,11 @@
 import Config
 
 config :joken,
-  default_signer: System.get_env("JWT_SECRET") || "default_dev_secret",
-  default_exp: 3600
+  default_signer: [
+    signer_alg: "HS256",
+    # change
+    key_octet: "my_secret_key_that_is_at_least_32_chars_long_for_dev"
+  ]
 
 config :chat,
   ecto_repos: [Chat.Repo],

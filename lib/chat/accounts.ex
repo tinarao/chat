@@ -3,7 +3,6 @@ defmodule Chat.Accounts do
   The Accounts context.
   """
   import Ecto.Query, warn: false
-  import Ecto.Changeset
   alias Chat.Repo
   alias Chat.Accounts.User
 

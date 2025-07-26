@@ -8,14 +8,20 @@ defmodule ChatWeb.APIAuthController do
 
   def me(conn, _params) do
     user = conn.assigns.current_user
-    json(conn, %{email: user.email, username: user.username})
+
+    conn
+    |> put_status(200)
+    |> json(%{
+      user: %{
+        username: user.username,
+        id: user.id
+      }
+    })
   end
 
   def signup(conn, %{"email" => email, "password" => password, "username" => username}) do
     is_unique =
       Chat.Accounts.is_unique(email, username)
-
-    IO.inspect(is_unique)
 
     if is_unique do
       conn
@@ -48,7 +54,19 @@ defmodule ChatWeb.APIAuthController do
   def login(conn, %{"email" => email, "password" => password}) do
     case Chat.Auth.login(email, password) do
       {:ok, token} ->
-        conn |> put_status(201) |> json(%{token: token})
+        conn
+        |> put_resp_cookie("tt", token,
+          http_only: false,
+          secure: false,
+          same_site: "lax",
+          max_age: 7 * 24 * 60 * 60
+        )
+        |> put_status(201)
+        |> json(%{
+          user: %{
+            result: "success"
+          }
+        })
 
       {:error, reason} ->
         conn |> put_status(400) |> json(%{error: reason})

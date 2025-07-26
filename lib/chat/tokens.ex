@@ -11,7 +11,6 @@ defmodule Chat.Tokens do
       exp: 2_628_288,
       iat: System.os_time()
     )
-    # Добавляем кастомные claims
     |> add_claim("user_id", nil, &validate_user/1)
   end
 
@@ -31,7 +30,15 @@ defmodule Chat.Tokens do
     generate_and_sign(extra_claims)
   end
 
-  def verify(token) do
-    verify_and_validate(token)
+  @spec extract_user(binary()) :: {:error, <<_::96>>} | {:ok, any()}
+  def extract_user(token) do
+    with {:ok, %{"user_id" => user_id}} <- verify_and_validate(token),
+         true <- validate_user(user_id),
+         user <- Chat.Accounts.get_user(user_id) do
+      {:ok, user}
+    else
+      _ ->
+        {:error, "unauthorized"}
+    end
   end
 end
