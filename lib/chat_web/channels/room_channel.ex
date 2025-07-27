@@ -46,6 +46,19 @@ defmodule ChatWeb.RoomChannel do
     end
   end
 
+  def handle_in("new_message", %{"content" => content}, socket) do
+    anonymous_user = %{username: "Anonymous", id: 0}
+
+    case validate_room_access(socket.topic, anonymous_user) do
+      :ok ->
+        broadcast_message(socket, anonymous_user, content)
+        {:reply, :ok, socket}
+
+      :error ->
+        {:reply, :error, "Room not found"}
+    end
+  end
+
   # Private functions
 
   defp get_room_and_user(topic, token) do
@@ -60,8 +73,10 @@ defmodule ChatWeb.RoomChannel do
 
   defp extract_user_from_token(token) do
     case Tokens.extract_user(token) do
-      {:ok, user} -> user
-      {:error, _} -> %{username: "Anonymous", id: 0}
+      {:ok, user} ->
+        user
+      {:error, _} ->
+        %{username: "Anonymous", id: 0}
     end
   end
 
