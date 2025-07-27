@@ -41,6 +41,10 @@ defmodule Chat.Chats do
   """
   def get_room!(id), do: Repo.get!(Room, id)
 
+  def get_room(id) do
+    Repo.get(Room, id)
+  end
+
   @doc """
   Creates a room.
 
@@ -101,7 +105,8 @@ defmodule Chat.Chats do
         %Room{}
         |> Room.changeset(%{
           name: "Lobby",
-          topic: "room:lobby"
+          topic: "room:lobby",
+          creator_id: 0
         })
         |> Repo.insert()
 

@@ -29,6 +29,10 @@ defmodule ChatWeb.Router do
     get "/me", APIAuthController, :me
 
     post "/rooms/create", ChatWeb.APIRoomsController, :create
+
+    patch "/rooms/allow_anonyms/:room_id/:allow_anonyms",
+          ChatWeb.APIRoomsController,
+          :switch_allow_anonyms
   end
 
   pipeline :protected do

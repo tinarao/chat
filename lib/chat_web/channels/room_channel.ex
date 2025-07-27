@@ -18,7 +18,10 @@ defmodule ChatWeb.RoomChannel do
   end
 
   def join(topic, params, socket) do
-    case Chat.Chats.get_by_topic(topic) do
+    with room <- Chat.Chats.get_by_topic(topic),
+         true <- room.allow_anonyms do
+      {:ok, socket}
+    else
       nil ->
         {:error,
          %{
@@ -27,8 +30,13 @@ defmodule ChatWeb.RoomChannel do
            }
          }}
 
-      _room ->
-        {:ok, socket}
+      false ->
+        {:error,
+         %{
+           error: %{
+             title: "комната \"" <> topic <> "\" не найдена"
+           }
+         }}
     end
   end
 
@@ -48,27 +56,24 @@ defmodule ChatWeb.RoomChannel do
   end
 
   defp handle_other_topic_message(%{"user" => user, "content" => content}, socket) do
-    broadcast_msg(socket, user, content)
-    {:reply, :ok, socket}
+    case Chat.Chats.get_by_topic(socket.topic) do
+      nil ->
+        {:reply, :error, "topic not found"}
+
+      _topic ->
+        broadcast_msg(socket, user, content)
+        {:reply, :ok, socket}
+    end
   end
 
-  defp broadcast_msg(socket, %{"username" => username, "id" =>  id}, content) do
-    IO.inspect(%{
-      user: %{
-        username: username,
-        id: id
-      },
-      content: content,
-      created_at: DateTime.utc_now()
-    })
-
+  defp broadcast_msg(socket, %{"username" => username, "id" => id}, content) do
     broadcast(socket, "new_message", %{
       user: %{
         username: username,
         id: id
       },
       content: content,
-      created_at: DateTime.utc_now()
+      createdAt: DateTime.utc_now()
     })
   end
 end

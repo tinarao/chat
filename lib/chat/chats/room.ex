@@ -5,6 +5,8 @@ defmodule Chat.Chats.Room do
   schema "rooms" do
     field :topic, :string
     field :name, :string
+    field :creator_id, :integer
+    field :allow_anonyms, :boolean
     has_many :messages, Chat.Messages.Message
     many_to_many :users, Chat.Accounts.User, join_through: "user_rooms"
 
@@ -14,7 +16,7 @@ defmodule Chat.Chats.Room do
   @doc false
   def changeset(room, attrs) do
     room
-    |> cast(attrs, [:name, :topic])
+    |> cast(attrs, [:name, :topic, :creator_id, :allow_anonyms])
     |> validate_required([:name, :topic])
     |> unique_constraint(:topic)
   end
