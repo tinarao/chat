@@ -8,15 +8,6 @@ defmodule Chat.Chats do
 
   alias Chat.Chats.Room
 
-  @doc """
-  Returns the list of rooms.
-
-  ## Examples
-
-      iex> list_rooms()
-      [%Room{}, ...]
-
-  """
   def list_rooms do
     Repo.all(Room)
   end
@@ -25,76 +16,23 @@ defmodule Chat.Chats do
     Repo.get_by(Room, topic: topic)
   end
 
-  @doc """
-  Gets a single room.
-
-  Raises `Ecto.NoResultsError` if the Room does not exist.
-
-  ## Examples
-
-      iex> get_room!(123)
-      %Room{}
-
-      iex> get_room!(456)
-      ** (Ecto.NoResultsError)
-
-  """
   def get_room!(id), do: Repo.get!(Room, id)
 
   def get_room(id) do
     Repo.get(Room, id)
   end
 
-  @doc """
-  Creates a room.
-
-  ## Examples
-
-      iex> create_room(%{field: value})
-      {:ok, %Room{}}
-
-      iex> create_room(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
   def create_room(attrs \\ %{}) do
     %Room{}
     |> Room.changeset(attrs)
     |> Repo.insert()
   end
 
-  @doc """
-  Updates a room.
-
-  ## Examples
-
-      iex> update_room(room, %{field: new_value})
-      {:ok, %Room{}}
-
-      iex> update_room(room, %{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def update_room(%Room{} = room, attrs) do
-    room
-    |> Room.changeset(attrs)
-    |> Repo.update()
-  end
-
-  @doc """
-  Deletes a room.
-
-  ## Examples
-
-      iex> delete_room(room)
-      {:ok, %Room{}}
-
-      iex> delete_room(room)
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def delete_room(%Room{} = room) do
-    Repo.delete(room)
+  def get_my_rooms(user_id) do
+    Room
+    |> join(:inner, [r], u in assoc(r, :users))
+    |> where([_r, u], u.id == ^user_id)
+    |> Repo.all()
   end
 
   def ensure_lobby_exists() do
@@ -106,7 +44,8 @@ defmodule Chat.Chats do
         |> Room.changeset(%{
           name: "Lobby",
           topic: "room:lobby",
-          creator_id: 0
+          creator_id: 0,
+          allow_anonyms: true
         })
         |> Repo.insert()
 
@@ -116,15 +55,44 @@ defmodule Chat.Chats do
     end
   end
 
-  @doc """
-  Returns an `%Ecto.Changeset{}` for tracking room changes.
+  def add_user_to_room(room_id, user_id) do
+    exists =
+      Repo.exists?(
+        from ur in "user_rooms", where: ur.user_id == ^user_id and ur.room_id == ^room_id
+      )
 
-  ## Examples
+    if exists do
+      {:error, :already_exists}
+    else
+      now = NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
 
-      iex> change_room(room)
-      %Ecto.Changeset{data: %Room{}}
+      case Repo.insert_all(
+             "user_rooms",
+             [
+               %{
+                 user_id: user_id,
+                 room_id: room_id,
+                 inserted_at: now,
+                 updated_at: now
+               }
+             ]
+           ) do
+        {1, _} -> {:ok}
+        _ -> {:error, :insert_failed}
+      end
+    end
+  end
 
-  """
+  def update_room(%Room{} = room, attrs) do
+    room
+    |> Room.changeset(attrs)
+    |> Repo.update()
+  end
+
+  def delete_room(%Room{} = room) do
+    Repo.delete(room)
+  end
+
   def change_room(%Room{} = room, attrs \\ %{}) do
     Room.changeset(room, attrs)
   end

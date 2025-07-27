@@ -28,6 +28,7 @@ defmodule ChatWeb.Router do
     pipe_through :protected
     get "/me", APIAuthController, :me
 
+    get "/rooms/get/my", ChatWeb.APIRoomsController, :get_my_rooms
     post "/rooms/create", ChatWeb.APIRoomsController, :create
 
     patch "/rooms/allow_anonyms/:room_id/:allow_anonyms",

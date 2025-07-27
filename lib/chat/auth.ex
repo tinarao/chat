@@ -7,7 +7,7 @@ defmodule Chat.Auth do
     else
       {:error, :secret_not_found} ->
         IO.inspect("Ключи не заданы. Какого хуя? Не знаю.")
-        {:error, "ошибkа сервера"}
+        {:error, "ошибка сервера"}
 
       nil ->
         {:error, "Пользователь не найден"}

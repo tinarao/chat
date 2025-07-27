@@ -1,4 +1,5 @@
 defmodule ChatWeb.APIRoomsController do
+  alias Chat.Chats
   alias Ecto.UUID
   use ChatWeb, :controller
 
@@ -25,7 +26,7 @@ defmodule ChatWeb.APIRoomsController do
 
     with room <- Chat.Chats.get_room(room_id),
          true <- room.creator_id == current_user.id,
-         {:ok, room} <- Chat.Chats.update_room(room, %{allow_anonyms: allow_anonyms}) do
+         {:ok, _room} <- Chat.Chats.update_room(room, %{allow_anonyms: allow_anonyms}) do
       conn
       |> put_status(201)
       |> json(%{
@@ -53,12 +54,26 @@ defmodule ChatWeb.APIRoomsController do
           error: reason
         })
     end
+  end
 
-    # case Chat.Chats.get_room(room_id) do
-    #   nil -> 
-    #     conn
-    #       |> put_status(404)
-    # end
+  def get_my_rooms(conn, _params) do
+    user = conn.assigns.current_user
+    chats = Chats.get_my_rooms(user.id)
+
+    serialized_chats =
+      Enum.map(chats, fn room ->
+        %{
+          id: room.id,
+          topic: room.topic,
+          name: room.name,
+          creatorId: room.creator_id,
+          allowAnonyms: room.allow_anonyms
+        }
+      end)
+
+    conn
+    |> put_status(200)
+    |> json(%{chats: serialized_chats})
   end
 
   def create(conn, %{"name" => name}) do
