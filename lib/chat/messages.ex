@@ -17,6 +17,24 @@ defmodule Chat.Messages do
     Repo.all(Message)
   end
 
+  def get_messages_by_room(:topic, topic) do
+    room = Chat.Chats.get_by_topic(topic)
+
+    if is_nil(room) do
+      []
+    end
+
+    get_messages_by_room(:id, room.id)
+  end
+
+  def get_messages_by_room(:id, room_id) do
+    Message
+    |> where(room_id: ^room_id)
+    |> order_by(asc: :inserted_at)
+    |> preload(:user)
+    |> Repo.all()
+  end
+
   @doc """
   Gets a single message.
 
@@ -69,7 +87,6 @@ defmodule Chat.Messages do
     |> Repo.update()
   end
 
-
   @doc """
   Deletes a message.
 
@@ -97,5 +114,23 @@ defmodule Chat.Messages do
   """
   def change_message(%Message{} = message, attrs \\ %{}) do
     Message.changeset(message, attrs)
+  end
+
+  def serialize_message(%{user: user} = message) when not is_nil(user) do
+    message
+    |> Map.from_struct()
+    |> Map.drop([:__meta__, :room])
+    |> Map.put(:user, %{id: message.user.id, username: message.user.username})
+  end
+
+  def serialize_message(message) do
+    message
+    |> Map.from_struct()
+    |> Map.drop([:__meta__, :room])
+    |> Map.put(:user, %{id: 0, username: "Anonymous"})
+  end
+
+  def serialize_messages_list(messages) do
+    messages |> Enum.map(&serialize_message/1)
   end
 end

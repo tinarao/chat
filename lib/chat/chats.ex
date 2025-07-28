@@ -38,8 +38,6 @@ defmodule Chat.Chats do
   def ensure_lobby_exists() do
     case(Repo.get_by(Room, topic: "room:lobby")) do
       nil ->
-        IO.puts("Lobby did not exist. Creating.")
-
         %Room{}
         |> Room.changeset(%{
           name: "Lobby",
@@ -50,7 +48,6 @@ defmodule Chat.Chats do
         |> Repo.insert()
 
       room ->
-        IO.puts("Lobby exists in database.")
         {:ok, room}
     end
   end
