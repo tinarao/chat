@@ -26,11 +26,11 @@ defmodule ChatWeb.APIRoomsController do
 
     with room <- Chat.Chats.get_room(room_id),
          true <- room.creator_id == current_user.id,
-         {:ok, _room} <- Chat.Chats.update_room(room, %{allow_anonyms: allow_anonyms}) do
+         {:ok, room} <- Chat.Chats.update_room(room, %{allow_anonyms: allow_anonyms}) do
       conn
       |> put_status(201)
       |> json(%{
-        result: "room modified"
+        new_value: room.allow_anonyms
       })
     else
       nil ->

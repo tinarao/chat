@@ -19,6 +19,8 @@ defmodule ChatWeb.Router do
 
     options "/*path", APIAuthController, :options
 
+    # get "/messages/:topic", ChatWeb.APIMessagesController, :get_by_room
+
     post "/signup", APIAuthController, :signup
     post "/login", APIAuthController, :login
     delete "/logout", APIAuthController, :logout
