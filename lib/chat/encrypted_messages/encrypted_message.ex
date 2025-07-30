@@ -9,6 +9,7 @@ defmodule Chat.EncryptedMessages.EncryptedMessage do
 
     belongs_to :sender, Chat.Accounts.User
     belongs_to :recipient, Chat.Accounts.User
+    belongs_to :secret_chat, Chat.EncryptedMessages.EncryptedMessage
 
     timestamps(type: :utc_datetime)
   end
