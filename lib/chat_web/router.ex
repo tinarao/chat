@@ -19,8 +19,6 @@ defmodule ChatWeb.Router do
 
     options "/*path", APIAuthController, :options
 
-    # get "/messages/:topic", ChatWeb.APIMessagesController, :get_by_room
-
     post "/signup", APIAuthController, :signup
     post "/login", APIAuthController, :login
     delete "/logout", APIAuthController, :logout
@@ -36,6 +34,10 @@ defmodule ChatWeb.Router do
     patch "/rooms/allow_anonyms/:room_id/:allow_anonyms",
           ChatWeb.APIRoomsController,
           :switch_allow_anonyms
+
+    # keys
+    get "/keys/id/:user_id", ChatWeb.APIKeysController, :get_by_user
+    post "/keys", ChatWeb.APIKeysController, :create
   end
 
   pipeline :protected do

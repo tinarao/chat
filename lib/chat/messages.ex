@@ -1,7 +1,7 @@
 defmodule Chat.Messages do
   import Ecto.Query, warn: false
-  alias Chat.Repo
 
+  alias Chat.Repo
   alias Chat.Messages.Message
 
   @doc """

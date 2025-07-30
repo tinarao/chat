@@ -11,6 +11,7 @@ defmodule Chat.Accounts.User do
     field :password, :string, virtual: true
 
     has_many :messages, Chat.Messages.Message
+    has_many :public_keys, Chat.Keys.Key
     many_to_many :rooms, Chat.Chats.Room, join_through: "user_rooms"
 
     timestamps(type: :utc_datetime)
