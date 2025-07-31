@@ -1,10 +1,10 @@
-defmodule Chat.SecretChat do
+defmodule Chat.SecretChats.SecretChat do
   use Ecto.Schema
   import Ecto.Changeset
 
   schema "secret_chats" do
-    field :first_user_id, :integer
-    field :second_user_id, :integer
+    belongs_to :first_user, Chat.Accounts.User
+    belongs_to :second_user, Chat.Accounts.User
 
     has_many :messages, Chat.EncryptedMessages.EncryptedMessage
 

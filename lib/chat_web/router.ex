@@ -38,6 +38,10 @@ defmodule ChatWeb.Router do
     # keys
     get "/keys/id/:user_id", ChatWeb.APIKeysController, :get_by_user
     post "/keys", ChatWeb.APIKeysController, :create
+
+    # secret chats
+    get "/secret_chats/my", ChatWeb.APISecretChatsController, :get_my
+    post "/secret_chats/new/:with_username", ChatWeb.APISecretChatsController, :create
   end
 
   pipeline :protected do

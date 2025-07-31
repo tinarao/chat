@@ -44,6 +44,8 @@ defmodule Chat.Accounts do
     Repo.get_by(Chat.Accounts.User, email: email)
   end
 
+  def get_by_username(username), do: Repo.get_by(Chat.Accounts.User, username: username)
+
   def is_unique(email, username) do
     from(u in Chat.Accounts.User,
       where: u.email == ^email,
@@ -70,10 +72,6 @@ defmodule Chat.Accounts do
     user_data =
       %Chat.Accounts.User{}
       |> User.register_changeset(attrs)
-
-    IO.inspect(user_data)
-
-    # Ecto.Changeset.cast()
 
     case Repo.insert(user_data) do
       {:ok, user} -> {:ok, user}
