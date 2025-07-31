@@ -2,6 +2,11 @@ defmodule Chat.Accounts.User do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @derive {
+    Jason.Encoder,
+    only: [:id, :username, :bio, :avatar_url, :inserted_at, :updated_at]
+  }
+
   schema "users" do
     field :username, :string
     field :bio, :string, default: ""

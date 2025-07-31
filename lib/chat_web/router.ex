@@ -41,6 +41,7 @@ defmodule ChatWeb.Router do
 
     # secret chats
     get "/secret_chats/my", ChatWeb.APISecretChatsController, :get_my
+    get "/secret_chats/with/:username", ChatWeb.APISecretChatsController, :get_chat_with
     post "/secret_chats/new/:with_username", ChatWeb.APISecretChatsController, :create
   end
 

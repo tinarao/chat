@@ -20,24 +20,13 @@ defmodule Chat.SecretChats do
 
   def get_by_id(id), do: Repo.get(SecretChat, id)
 
+  # returns only one
   def get_by_user_ids(id1, id2) do
     SecretChat
     |> where(first_user_id: ^id1, second_user_id: ^id2)
     |> or_where(first_user_id: ^id2, second_user_id: ^id1)
+    |> preload([:first_user, :second_user])
     |> limit(1)
     |> Repo.one()
-  end
-
-  def to_map(chat) do
-    %{
-      first_user: %{
-        id: chat.first_user.id,
-        username: chat.first_user.username
-      },
-      second_user: %{
-        id: chat.second_user.id,
-        username: chat.second_user.username
-      }
-    }
   end
 end

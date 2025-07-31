@@ -1,6 +1,7 @@
 defmodule ChatWeb.UserSocket do
   use Phoenix.Socket
   channel "room:*", ChatWeb.RoomChannel
+  channel "secret:*", ChatWeb.SecretChatChannel
 
   @impl true
   def connect(_params, socket, _connect_info) do

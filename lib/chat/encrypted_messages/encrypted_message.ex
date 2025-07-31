@@ -2,6 +2,20 @@ defmodule Chat.EncryptedMessages.EncryptedMessage do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @derive {
+    Jason.Encoder,
+    only: [
+      :cipher_text,
+      :iv,
+      :status,
+      :sender,
+      :recipient,
+      :secret_chat,
+      :inserted_at,
+      :updated_at
+    ]
+  }
+
   schema "encrypted_message" do
     field :cipher_text, :string
     field :iv, :string
@@ -17,7 +31,7 @@ defmodule Chat.EncryptedMessages.EncryptedMessage do
   @doc false
   def changeset(encrypted_message, attrs) do
     encrypted_message
-    |> cast(attrs, [:cipher_text, :iv, :status, :sender_id, :recipient_id])
+    |> cast(attrs, [:cipher_text, :iv, :status, :sender_id, :recipient_id, :secret_chat_id])
     |> validate_required([:cipher_text, :iv, :status, :sender_id, :recipient_id])
   end
 end
