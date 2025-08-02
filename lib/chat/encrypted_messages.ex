@@ -6,8 +6,21 @@ defmodule Chat.EncryptedMessages do
   def get_by_chat_id(id) do
     EncryptedMessage
     |> where(secret_chat_id: ^id)
-    |> preload([:sender, :recipient])
+    |> preload([:sender, :recipient, :secret_chat])
     |> Repo.all()
+  end
+
+  def create(attrs) do
+    %EncryptedMessage{}
+    |> EncryptedMessage.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  def remove_all_my_messages(user_id) do
+    EncryptedMessage
+    |> where([m], m.sender_id == ^user_id)
+    |> or_where([m], m.recipient_id == ^user_id)
+    |> Repo.delete_all()
   end
 
   def to_map(message) do

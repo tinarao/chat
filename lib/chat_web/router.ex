@@ -36,7 +36,9 @@ defmodule ChatWeb.Router do
           :switch_allow_anonyms
 
     # keys
+    get "/keys/my", ChatWeb.APIKeysController, :get_by_user
     get "/keys/id/:user_id", ChatWeb.APIKeysController, :get_by_user
+    get "/keys/username/:username", ChatWeb.APIKeysController, :get_by_user
     post "/keys", ChatWeb.APIKeysController, :create
 
     # secret chats

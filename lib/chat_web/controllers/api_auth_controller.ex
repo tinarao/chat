@@ -1,4 +1,5 @@
 defmodule ChatWeb.APIAuthController do
+  alias Chat.EncryptedMessages
   use ChatWeb, :controller
 
   def options(conn, _params) do
@@ -63,13 +64,22 @@ defmodule ChatWeb.APIAuthController do
         )
         |> put_status(201)
         |> json(%{
-          user: %{
-            result: "success"
-          }
+          token: token
         })
 
       {:error, reason} ->
         conn |> put_status(400) |> json(%{error: reason})
     end
+  end
+
+  def logout(conn, _params) do
+    user = conn.assigns.current_user
+    EncryptedMessages.remove_all_my_messages(user.id)
+
+    conn
+    |> put_status(200)
+    |> json(%{
+      result: "ok"
+    })
   end
 end
